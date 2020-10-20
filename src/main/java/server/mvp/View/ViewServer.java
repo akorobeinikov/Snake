@@ -1,5 +1,7 @@
 package server.mvp.View;
 
+import resources.Cell;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -33,19 +35,16 @@ public class ViewServer implements IViewServer{
         return -1;
     }
 
-    public void setField(final int[][] gameField) {
+    public void setCell(final Cell point) {
         new Thread()
         {
             @Override
             public void run() {
                 try {
-                    dos.writeInt(gameField.length);
-                    dos.writeInt(gameField[0].length);
-                    for(int i = 0; i < gameField.length; i++) {
-                        for(int j = 0; j < gameField[i].length; j++) {
-                            dos.writeInt(gameField[i][j]);
-                        }
-                    }
+                    System.out.printf("Send: x=%d, y=%d, state= %s", point.x, point.y, point.state);
+                    dos.writeInt(point.x);
+                    dos.writeInt(point.y);
+                    dos.writeUTF(point.state);
                     dos.flush();
                 } catch (IOException ex) {
                     Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -57,14 +56,10 @@ public class ViewServer implements IViewServer{
 
     public Cell getCell() {
         try {
-            int height = dis.readInt();
-            int width = dis.readInt();
-            int[][] field = new int[height][width];
-            for(int i = 0; i < height; ++i) {
-                for(int j = 0; j < width; ++j) {
-                    field[i][j] = dis.readInt();
-                }
-            }
+            int x = dis.readInt();
+            int y = dis.readInt();
+            String state = dis.readUTF();
+            Cell cell = new Cell(x, y, state);
             return cell;
         } catch (IOException ex) {
             Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);

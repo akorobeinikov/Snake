@@ -1,6 +1,8 @@
 package client.mvc.Model;
 
 import client.mvc.View.IObserver;
+import resources.Cell;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -61,14 +63,12 @@ public class ModelClient {
                             int op = dis.readInt();
                             if(op == 1)
                             {
-                                int height = dis.readInt();
-                                int width = dis.readInt();
-                                field = new int[height][width];
-                                for(int i = 0; i < height; ++i) {
-                                    for(int j = 0; j < width; ++j) {
-                                        field[i][j] = dis.readInt();
-                                    }
-                                }
+                                op = dis.readInt();
+                                int x = dis.readInt();
+                                int y = dis.readInt();
+                                String state = dis.readUTF();
+                                System.out.printf("Received: x=%d; y=%d state = %s\n", x, y, state);
+                                point = new Cell(x, y, state);
                                 refresh();
                             }
                             if(op == -1)
@@ -89,21 +89,23 @@ public class ModelClient {
         refresh();
     }
 
-    int[][] field;
+    Cell point;
 
-    public int[][] getField(){
+    public Cell getPoint(){
         System.out.println(cs);
         if(cs == null) return null;
 
-        return field;
+        return point;
     }
 
-    public void setText(String mes)
+    public void setCell(Cell point)
     {
         if(cs == null) return;
         try {
             dos.writeInt(1);
-            dos.writeUTF(mes);
+            dos.writeInt(point.x);
+            dos.writeInt(point.y);
+            dos.writeUTF(point.state);
             dos.flush();
         } catch (IOException ex) {
             Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);

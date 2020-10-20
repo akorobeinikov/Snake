@@ -1,8 +1,11 @@
 package server.mvp.View;
 
+
+import resources.Cell;
+
 public interface IViewServer {
     int getOp();
-    void setField(int[][] gameField);
-    int[][] getField();
+    void setCell(final Cell point);
+    Cell getCell();
     void setOp(int op);
 }

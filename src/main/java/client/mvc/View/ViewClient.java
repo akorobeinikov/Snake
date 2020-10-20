@@ -2,6 +2,7 @@ package client.mvc.View;
 
 import client.mvc.Model.BModelClient;
 import client.mvc.Model.ModelClient;
+import resources.Cell;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,13 +60,10 @@ public class ViewClient extends javax.swing.JPanel implements IObserver{
 
     @Override
     public void refresh() {
-        int[][] field = m.getField();
-        if (field == null)
+        Cell point = m.getPoint();
+        if (point == null)
             return;
-        for(int i = 0; i < field.length; ++i) {
-            for(int j = 0; j < field[0].length; ++j) {
-                viewField[i][j].setText(String.valueOf(field[i][j]));
-            }
-        }
+        System.out.printf("new point = %s", point.state);
+        viewField[point.x][point.y].setIcon(point.getIcon());
     }
 }

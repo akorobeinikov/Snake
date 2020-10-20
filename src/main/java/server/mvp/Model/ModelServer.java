@@ -19,16 +19,16 @@ class ModelServer implements IModelServer{
     ArrayList<IPresenter> list_players = new ArrayList<>();
 
     public ModelServer() {
-        buffer = new Cell(0, 0);
+        buffer = new Cell(0, 0, "empty");
         for(int i = 0; i < height; ++i) {
             for(int j = 0; j < width; ++j) {
-                game_field[i][j] = new Cell(i, j);
+                game_field[i][j] = new Cell(i, j, "empty");
             }
         }
     }
 
     public void setCell(Cell new_c) {
-        game_field[new_c.getX()][new_c.getY()] = new_c;
+        game_field[new_c.x][new_c.y] = new_c;
         buffer = new_c;
         refresh();
     }
@@ -41,8 +41,9 @@ class ModelServer implements IModelServer{
             for(int j = 0; j < width; j++){
                 if(game_field[i][j].isEmpty()) {
                     if (point == 0) {
-                        game_field[i][j].setState("eat");
+                        game_field[i][j].state = "eat";
                         buffer = game_field[i][j];
+                        refresh();
                         return;
                     }else {
                         point--;
@@ -50,7 +51,6 @@ class ModelServer implements IModelServer{
                 }
             }
         }
-        refresh();
     }
     void refresh()
     {
@@ -60,6 +60,7 @@ class ModelServer implements IModelServer{
     }
 
     public Cell getBuffer() {
+        System.out.printf("buffer x = %d, buffer y = %d, state = %s\n", buffer.x, buffer.y, buffer.state);
         return buffer;
     }
 

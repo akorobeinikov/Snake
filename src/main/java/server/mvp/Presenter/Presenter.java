@@ -30,12 +30,12 @@ class Presenter implements IPresenter{
                     code = v.getOp();
                     if(code == 1)
                     {
-                        observed_model.setField(v.getField());
+                        observed_model.setCell(v.getCell());
                     }
                     if(code == 2)
                     {
                         v.setOp(1);
-                        v.setField(observed_model.getField());
+                        v.setCell(observed_model.getBuffer());
                     }
                     if(code == -1)
                     {
@@ -50,7 +50,7 @@ class Presenter implements IPresenter{
     @Override
     public void update() {
         v.setOp(1);
-        v.setField(observed_model.getField());
+        v.setCell(observed_model.getBuffer());
     }
 
 }
