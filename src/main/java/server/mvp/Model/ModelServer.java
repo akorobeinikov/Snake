@@ -5,17 +5,13 @@ import java.util.Random;
 
 
 import resources.Cell;
+import resources.Game;
 import server.mvp.Presenter.IPresenter;
 
 
 class ModelServer implements IModelServer{
-    String mes = "message not found!";
-    int height = 20;
-    int width = 20;
-    int filled = 0;
-    Cell buffer;
-    Cell[][] game_field = new Cell[height][width];
 
+    ArrayList<Game> games = new ArrayList<>();
     ArrayList<IPresenter> list_players = new ArrayList<>();
 
     public ModelServer() {
