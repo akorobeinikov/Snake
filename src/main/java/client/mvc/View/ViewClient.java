@@ -19,7 +19,7 @@ public class ViewClient extends javax.swing.JPanel implements IObserver{
     public ViewClient() {
         initComponents();
         m = BModelClient.model();
-        m.addEvelt(this);
+        m.addEvent(this);
         refresh();
     }
 

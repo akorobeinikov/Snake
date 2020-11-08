@@ -7,7 +7,7 @@ public class Game {
     int height = 20;
     int width = 20;
     int filled = 0;
-    Cell[][] game_field = new Cell[height][width];
+    Cell[][] game_field = new Cell[height][width]; // temporary public
     Snake[] snakes = new Snake[2];
 
     public Game() {
@@ -38,5 +38,28 @@ public class Game {
             }
         }
         filled++;
+    }
+
+    public void setCell(Cell new_c) {
+        game_field[new_c.x][new_c.y] = new_c;
+    }
+
+    public Cell generateNewItem() {
+        int point = new Random().nextInt(height*width - filled);
+        Cell resCell = new Cell(-1, -1, "-1");
+        System.out.println(point);
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                if(game_field[i][j].isEmpty()) {
+                    if (point == 0) {
+                        game_field[i][j].state = "eat";
+                        resCell = game_field[i][j];
+                    }else {
+                        point--;
+                    }
+                }
+            }
+        }
+        return resCell;
     }
 }

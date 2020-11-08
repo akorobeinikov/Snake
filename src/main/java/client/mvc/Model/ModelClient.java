@@ -24,7 +24,7 @@ public class ModelClient {
 
     ArrayList<IObserver> list_o = new ArrayList<>();
 
-    public void addEvelt(IObserver o)
+    public void addEvent(IObserver o)
     {
         list_o.add(o);
     }
@@ -66,7 +66,7 @@ public class ModelClient {
                                 op = dis.readInt();
                                 int x = dis.readInt();
                                 int y = dis.readInt();
-                                String state = dis.readUTF();
+                                String state = dis.readUTF();  // !!!
                                 System.out.printf("Received: x=%d; y=%d state = %s\n", x, y, state);
                                 point = new Cell(x, y, state);
                                 refresh();

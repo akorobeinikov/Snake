@@ -13,40 +13,21 @@ class ModelServer implements IModelServer{
 
     ArrayList<Game> games = new ArrayList<>();
     ArrayList<IPresenter> list_players = new ArrayList<>();
-
+    Cell buffer;
     public ModelServer() {
+        games.add(new Game());
         buffer = new Cell(0, 0, "empty");
-        for(int i = 0; i < height; ++i) {
-            for(int j = 0; j < width; ++j) {
-                game_field[i][j] = new Cell(i, j, "empty");
-            }
-        }
     }
 
     public void setCell(Cell new_c) {
-        game_field[new_c.x][new_c.y] = new_c;
+        games.get(0).setCell(new_c);
         buffer = new_c;
         refresh();
     }
 
     public void generateNewItem() {
-        int point = new Random().nextInt(height*width - filled);
-        System.out.println(point);
-
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
-                if(game_field[i][j].isEmpty()) {
-                    if (point == 0) {
-                        game_field[i][j].state = "eat";
-                        buffer = game_field[i][j];
-                        refresh();
-                        return;
-                    }else {
-                        point--;
-                    }
-                }
-            }
-        }
+        buffer = games.get(0).generateNewItem(); // what if return is (-1, -1, -1)?
+        refresh();
     }
     void refresh()
     {
