@@ -1,6 +1,7 @@
 package server.mvp.View;
 
 import resources.Cell;
+import resources.CellState;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -41,10 +42,10 @@ public class ViewServer implements IViewServer{
             @Override
             public void run() {
                 try {
-                    System.out.printf("Send: x=%d, y=%d, state= %s", point.x, point.y, point.state);
+                    System.out.printf("Send: x=%d, y=%d, state = %s", point.x, point.y, point.state);
                     dos.writeInt(point.x);
                     dos.writeInt(point.y);
-                    dos.writeUTF(point.state);
+                    dos.writeInt(point.state.ordinal());
                     dos.flush();
                 } catch (IOException ex) {
                     Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -58,7 +59,7 @@ public class ViewServer implements IViewServer{
         try {
             int x = dis.readInt();
             int y = dis.readInt();
-            String state = dis.readUTF();
+            CellState state = CellState.fromInteger(dis.readInt());
             Cell cell = new Cell(x, y, state);
             return cell;
         } catch (IOException ex) {

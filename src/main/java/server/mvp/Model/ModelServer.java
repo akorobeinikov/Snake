@@ -5,6 +5,7 @@ import java.util.Random;
 
 
 import resources.Cell;
+import resources.CellState;
 import resources.Game;
 import server.mvp.Presenter.IPresenter;
 
@@ -16,7 +17,7 @@ class ModelServer implements IModelServer{
     Cell buffer;
     public ModelServer() {
         games.add(new Game());
-        buffer = new Cell(0, 0, "empty");
+        buffer = new Cell(0, 0, CellState.empty);
     }
 
     public void setCell(Cell new_c) {

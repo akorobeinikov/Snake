@@ -2,6 +2,7 @@ package client.mvc.Model;
 
 import client.mvc.View.IObserver;
 import resources.Cell;
+import resources.CellState;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -66,7 +67,7 @@ public class ModelClient {
                                 op = dis.readInt();
                                 int x = dis.readInt();
                                 int y = dis.readInt();
-                                String state = dis.readUTF();  // !!!
+                                CellState state = CellState.fromInteger(dis.readInt());
                                 System.out.printf("Received: x=%d; y=%d state = %s\n", x, y, state);
                                 point = new Cell(x, y, state);
                                 refresh();
@@ -105,7 +106,7 @@ public class ModelClient {
             dos.writeInt(1);
             dos.writeInt(point.x);
             dos.writeInt(point.y);
-            dos.writeUTF(point.state);
+            dos.writeInt(point.state.ordinal());
             dos.flush();
         } catch (IOException ex) {
             Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);

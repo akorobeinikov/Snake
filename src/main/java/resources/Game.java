@@ -14,7 +14,7 @@ public class Game {
         // field initialization
         for(int i = 0; i < height; ++i) {
             for(int j = 0; j < width; ++j) {
-                game_field[i][j] = new Cell(i, j, "empty");
+                game_field[i][j] = new Cell(i, j, CellState.empty);
             }
         }
 
@@ -46,13 +46,13 @@ public class Game {
 
     public Cell generateNewItem() {
         int point = new Random().nextInt(height*width - filled);
-        Cell resCell = new Cell(-1, -1, "-1");
+        Cell resCell = new Cell(-1, -1, null);
         System.out.println(point);
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
                 if(game_field[i][j].isEmpty()) {
                     if (point == 0) {
-                        game_field[i][j].state = "eat";
+                        game_field[i][j].state = CellState.eat;
                         resCell = game_field[i][j];
                     }else {
                         point--;
