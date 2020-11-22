@@ -15,6 +15,7 @@ class ModelServer implements IModelServer{
     ArrayList<Game> games = new ArrayList<>();
     ArrayList<IPresenter> list_players = new ArrayList<>();
     Cell buffer;
+
     public ModelServer() {
         games.add(new Game());
         buffer = new Cell(0, 0, CellState.empty);
@@ -29,6 +30,14 @@ class ModelServer implements IModelServer{
     public void generateNewItem() {
         buffer = games.get(0).generateNewItem(); // what if return is (-1, -1, -1)?
         refresh();
+    }
+
+    public void addSnake() {
+        ArrayList<Cell> snake = games.get(0).addSnake();
+        for (int i = 0; i < snake.size(); ++i) {
+            buffer = snake.get(i);
+            refresh();
+        }
     }
     void refresh()
     {
@@ -45,7 +54,7 @@ class ModelServer implements IModelServer{
     public void addPresenter(IPresenter p) {
         list_players.add(p);
         generateNewItem();
-        refresh();
+        addSnake();
     }
 
     public void removePresenter(IPresenter p) {

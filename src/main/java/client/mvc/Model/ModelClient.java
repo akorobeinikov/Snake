@@ -1,12 +1,13 @@
 package client.mvc.Model;
 
 import client.mvc.View.IObserver;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import resources.Cell;
 import resources.CellState;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -25,7 +26,7 @@ public class ModelClient {
 
     ArrayList<IObserver> list_o = new ArrayList<>();
 
-    public void addEvent(IObserver o)
+    public void addObserver(IObserver o)
     {
         list_o.add(o);
     }
@@ -36,21 +37,24 @@ public class ModelClient {
         }
     }
 
-    public ModelClient()
-    {
-    }
-    public void init()
-    {
-        if(cs != null) return;
+    public void setIp() {
         try {
             ip = InetAddress.getLocalHost();
         } catch (UnknownHostException ex) {
             Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try {
+    }
+    public void init()
+    {
+        if(cs != null) return;
+        setIp();
+        connect();
+    }
 
+    public void connect() {
+        try {
             cs = new Socket(ip, port);
-            System.out.append("Client start \n");
+            System.out.printf("Client start with ip %s \n", ip);
 
             dis = new DataInputStream(cs.getInputStream());
             dos = new DataOutputStream(cs.getOutputStream());
@@ -62,14 +66,18 @@ public class ModelClient {
                         while(true)
                         {
                             int op = dis.readInt();
+                            System.out.println(op);
                             if(op == 1)
                             {
-                                op = dis.readInt();
-                                int x = dis.readInt();
-                                int y = dis.readInt();
-                                CellState state = CellState.fromInteger(dis.readInt());
-                                System.out.printf("Received: x=%d; y=%d state = %s\n", x, y, state);
-                                point = new Cell(x, y, state);
+                                String jsonString = dis.readUTF();
+                                System.out.println(jsonString);
+                                StringReader reader = new StringReader(jsonString);
+
+                                ObjectMapper mapper = new ObjectMapper();
+                                mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+                                point = mapper.readValue(reader, Cell.class);
+                                System.out.printf("Received: x=%d; y=%d state = %s\n", point.x, point.y, point.state);
                                 refresh();
                             }
                             if(op == -1)
@@ -103,10 +111,11 @@ public class ModelClient {
     {
         if(cs == null) return;
         try {
-            dos.writeInt(1);
-            dos.writeInt(point.x);
-            dos.writeInt(point.y);
-            dos.writeInt(point.state.ordinal());
+            StringWriter writer = new StringWriter();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            mapper.writeValue(writer, point);
+            dos.writeUTF(writer.toString());
             dos.flush();
         } catch (IOException ex) {
             Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);

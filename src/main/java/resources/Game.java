@@ -1,6 +1,8 @@
 package resources;
 
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Game {
@@ -24,7 +26,7 @@ public class Game {
         }
     }
 
-    public void addSnake() {
+    public ArrayList<Cell> addSnake() {
         int ok = 0;
         if (snakes[ok] != null) {
             ok++;
@@ -38,7 +40,9 @@ public class Game {
             }
         }
         filled++;
+        return snakes[ok].translateSnakeToVectorOfCells();
     }
+
 
     public void setCell(Cell new_c) {
         game_field[new_c.x][new_c.y] = new_c;
