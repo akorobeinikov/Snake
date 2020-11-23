@@ -7,6 +7,7 @@ import java.util.Random;
 import resources.Cell;
 import resources.CellState;
 import resources.Game;
+import resources.SnakeChanges;
 import server.mvp.Presenter.IPresenter;
 
 
@@ -27,18 +28,51 @@ class ModelServer implements IModelServer{
         refresh();
     }
 
-    public void generateNewItem() {
-        buffer = games.get(0).generateNewItem(); // what if return is (-1, -1, -1)?
+    public void gameInitialization(int gameId) {
+        buffer = games.get(gameId).generateNewItem(); // what if return is (-1, -1, -1)?
         refresh();
-    }
-
-    public void addSnake() {
-        ArrayList<Cell> snake = games.get(0).addSnake();
+        ArrayList<Cell> snake = games.get(gameId).addSnake();
         for (int i = 0; i < snake.size(); ++i) {
             buffer = snake.get(i);
             refresh();
         }
     }
+
+    public void gameStart(int gameId) {
+        new Thread(){
+            @Override
+            public void run() {
+                Game game = games.get(gameId);
+                boolean status = false;
+                while(true) {
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    for (int i = 0; i < game.snakes.length; ++i) {
+                        if (game.snakes[i] == null) {
+                            continue;
+                        }
+                        SnakeChanges changes = game.snakes[i].move();
+                        status = changes.status;
+                        System.out.printf("Status = %b \n", status);
+                        if (status) {
+                            System.out.println("GAME OVER");
+                            break;
+                        }
+                        buffer = new Cell(changes.tail.x, changes.tail.y, CellState.empty);
+                        refresh();
+                        buffer = new Cell(changes.head.x, changes.head.y, CellState.snake);
+                        refresh();
+                    }
+                    if (status) break;
+                    refresh();
+                }
+            }
+        }.start();
+    }
+
     void refresh()
     {
         for (IPresenter presenter : list_players) {
@@ -53,8 +87,8 @@ class ModelServer implements IModelServer{
 
     public void addPresenter(IPresenter p) {
         list_players.add(p);
-        generateNewItem();
-        addSnake();
+        gameInitialization(0);
+        gameStart(0);
     }
 
     public void removePresenter(IPresenter p) {

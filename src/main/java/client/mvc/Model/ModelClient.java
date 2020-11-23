@@ -77,7 +77,7 @@ public class ModelClient {
                                 mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
                                 point = mapper.readValue(reader, Cell.class);
-                                System.out.printf("Received: x=%d; y=%d state = %s\n", point.x, point.y, point.state);
+//                                System.out.printf("Received: x=%d; y=%d state = %s\n", point.x, point.y, point.state);
                                 refresh();
                             }
                             if(op == -1)
@@ -101,7 +101,6 @@ public class ModelClient {
     Cell point;
 
     public Cell getPoint(){
-        System.out.println(cs);
         if(cs == null) return null;
 
         return point;

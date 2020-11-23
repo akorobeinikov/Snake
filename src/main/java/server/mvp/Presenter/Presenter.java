@@ -7,13 +7,12 @@ import server.mvp.Model.IModelServer;
 class Presenter implements IPresenter{
     IViewServer v;
     IModelServer observed_model;
-    boolean lock;
 
     public Presenter(IModelServer _m, IViewServer _v)
     {
         v = _v;
         observed_model = _m;
-        lock = true;
+
         start();
         observed_model.addPresenter(this);
     }
@@ -50,12 +49,8 @@ class Presenter implements IPresenter{
 
     @Override
     public void update() {
-        if (lock) {
-            lock = false;
-            v.setOp(1);
-            v.setCell(observed_model.getBuffer());
-        }
-        lock = true;
+        v.setOp(1);
+        v.setCell(observed_model.getBuffer());
     }
 
 }
