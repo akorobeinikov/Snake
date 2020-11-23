@@ -17,6 +17,16 @@ public class Snake {
         body.add(new Point(x0, y0));
     }
 
+    public ArrayList<Cell> translateSnakeToVectorOfCells() {
+        ArrayList<Cell> result = new ArrayList<Cell>();
+        for (int i = 0; i < size; ++i) {
+            int x = body.get(i).x;
+            int y = body.get(i).y;
+            result.add(new Cell(x, y, CellState.snake));
+        }
+        return result;
+    }
+
     public void changeDirection(int direction) {
         this.direction = direction;
     }

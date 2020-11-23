@@ -1,12 +1,13 @@
 package server.mvp.View;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import resources.Cell;
 import resources.CellState;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,30 +38,30 @@ public class ViewServer implements IViewServer{
     }
 
     public void setCell(final Cell point) {
-        new Thread()
-        {
-            @Override
-            public void run() {
-                try {
-                    System.out.printf("Send: x=%d, y=%d, state = %s", point.x, point.y, point.state);
-                    dos.writeInt(point.x);
-                    dos.writeInt(point.y);
-                    dos.writeInt(point.state.ordinal());
-                    dos.flush();
-                } catch (IOException ex) {
-                    Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }.start();
+        try {
+            System.out.printf("Send: x=%d, y=%d, state = %s \n", point.x, point.y, point.state);
+            StringWriter writer = new StringWriter();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            mapper.writeValue(writer, point);
+            System.out.println("On server :" + writer.toString() + '\n');
+            dos.writeUTF(writer.toString());
+            dos.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
     public Cell getCell() {
         try {
-            int x = dis.readInt();
-            int y = dis.readInt();
-            CellState state = CellState.fromInteger(dis.readInt());
-            Cell cell = new Cell(x, y, state);
+            String jsonString = dis.readUTF();
+            StringReader reader = new StringReader(jsonString);
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            Cell cell = mapper.readValue(reader, Cell.class);
             return cell;
         } catch (IOException ex) {
             Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,5 +78,4 @@ public class ViewServer implements IViewServer{
         }
 
     }
-
 }
