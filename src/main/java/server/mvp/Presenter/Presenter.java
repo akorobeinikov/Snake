@@ -22,7 +22,6 @@ class Presenter implements IPresenter {
         lock = true;
         id = getNewId();
         start();
-        System.out.println(id + " " + global_id);
         observed_model.addPresenter(id, this);
     }
 

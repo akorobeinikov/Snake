@@ -66,9 +66,18 @@ class ModelServer implements IModelServer {
             free_games.offerLast(games.size()-1);
         } else {
             presenter_game.add(p_id, free_games.pollFirst());
+            updateSecondPlayer(p_id);
         }
         addSnake(p_id);
         refresh(getGameId(p_id));
+    }
+
+    private void updateSecondPlayer(int p_id) {
+        ArrayList<Cell> cells = games.get(getGameId(p_id)).getNotEmptyCells();
+        for(int i = 0; i < cells.size(); i++) {
+            buffer.set(getGameId(p_id), cells.get(i));
+            refresh(getGameId(p_id));
+        }
     }
 
     public void removePresenter(int p_id, IPresenter p) {
