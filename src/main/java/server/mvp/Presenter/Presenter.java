@@ -3,19 +3,26 @@ package server.mvp.Presenter;
 import server.mvp.View.IViewServer;
 import server.mvp.Model.IModelServer;
 
+import java.util.ArrayDeque;
 
-class Presenter implements IPresenter{
+
+class Presenter implements IPresenter {
     IViewServer v;
     IModelServer observed_model;
     boolean lock;
+    int id;
+
+    static ArrayDeque<Integer> free_ids = new ArrayDeque<>();
+    static int global_id = 0;
 
     public Presenter(IModelServer _m, IViewServer _v)
     {
         v = _v;
         observed_model = _m;
         lock = true;
+        id = getNewId();
         start();
-        observed_model.addPresenter(this);
+        observed_model.addPresenter(id, this);
     }
 
     void start()
@@ -31,16 +38,17 @@ class Presenter implements IPresenter{
                     code = v.getOp();
                     if(code == 1)
                     {
-                        observed_model.setCell(v.getCell());
+                        observed_model.setCell(id, v.getCell());
                     }
                     if(code == 2)
                     {
                         v.setOp(1);
-                        v.setCell(observed_model.getBuffer());
+                        v.setCell(observed_model.getBuffer(id));
                     }
                     if(code == -1)
                     {
-                        observed_model.removePresenter(p);
+                        observed_model.removePresenter(id, p);
+                        free_ids.offerLast(id);
                     }
                 }
             }
@@ -53,9 +61,17 @@ class Presenter implements IPresenter{
         if (lock) {
             lock = false;
             v.setOp(1);
-            v.setCell(observed_model.getBuffer());
+            v.setCell(observed_model.getBuffer(id));
         }
         lock = true;
     }
 
+    private static int getNewId() {
+        global_id++;
+        if (free_ids.isEmpty()) {
+            return global_id-1;
+        } else {
+            return free_ids.pollFirst();
+        }
+    }
 }
