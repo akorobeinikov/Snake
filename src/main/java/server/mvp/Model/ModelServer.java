@@ -104,8 +104,10 @@ class ModelServer implements IModelServer {
             generateNewItem(p_id);
             free_games.offerLast(games.size()-1);
         } else {
-            presenter_game.add(p_id, free_games.pollFirst());
+            int gameId = free_games.pollFirst();
+            presenter_game.add(p_id, gameId);
             updateSecondPlayer(p_id);
+            gameStart(gameId);
         }
         addSnake(p_id);
         refresh(getGameId(p_id));
