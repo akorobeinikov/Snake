@@ -10,7 +10,7 @@ public class Game {
     int width = 20;
     int filled = 0;
     Cell[][] game_field = new Cell[height][width]; // temporary public
-    Snake[] snakes = new Snake[2];
+    public Snake[] snakes = new Snake[2];
 
     public Game() {
         // field initialization
@@ -46,7 +46,6 @@ public class Game {
         }
         return snake;
     }
-
 
     public void setCell(Cell new_c) {
         game_field[new_c.x][new_c.y] = new_c;

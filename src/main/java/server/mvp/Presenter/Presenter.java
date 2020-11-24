@@ -9,7 +9,7 @@ import java.util.ArrayDeque;
 class Presenter implements IPresenter {
     IViewServer v;
     IModelServer observed_model;
-    boolean lock;
+
     int id;
 
     static ArrayDeque<Integer> free_ids = new ArrayDeque<>();
@@ -19,8 +19,9 @@ class Presenter implements IPresenter {
     {
         v = _v;
         observed_model = _m;
-        lock = true;
+
         id = getNewId();
+
         start();
         observed_model.addPresenter(id, this);
     }
@@ -58,12 +59,8 @@ class Presenter implements IPresenter {
 
     @Override
     public void update() {
-        if (lock) {
-            lock = false;
-            v.setOp(1);
-            v.setCell(observed_model.getBuffer(id));
-        }
-        lock = true;
+        v.setOp(1);
+        v.setCell(observed_model.getBuffer());
     }
 
     private static int getNewId() {

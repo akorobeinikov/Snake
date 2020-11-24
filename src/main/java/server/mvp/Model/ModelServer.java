@@ -7,6 +7,7 @@ import java.util.HashMap;
 import resources.Cell;
 import resources.CellState;
 import resources.Game;
+import resources.SnakeChanges;
 import server.mvp.Presenter.IPresenter;
 
 
@@ -27,6 +28,7 @@ class ModelServer implements IModelServer {
         refresh(game_id);
     }
 
+
     public void generateNewItem(int p_id) {
         int game_id = getGameId(p_id);
         buffer.set(game_id, games.get(game_id).generateNewItem()); // what if return is (-1, -1, -1)?
@@ -39,6 +41,42 @@ class ModelServer implements IModelServer {
             buffer.set(getGameId(p_id), snake.get(i));
             refresh(getGameId(p_id));
         }
+    }
+
+
+    public void gameStart(int gameId) {
+        new Thread(){
+            @Override
+            public void run() {
+                Game game = games.get(gameId);
+                boolean status = false;
+                while(true) {
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    for (int i = 0; i < game.snakes.length; ++i) {
+                        if (game.snakes[i] == null) {
+                            continue;
+                        }
+                        SnakeChanges changes = game.snakes[i].move();
+                        status = changes.status;
+                        System.out.printf("Status = %b \n", status);
+                        if (status) {
+                            System.out.println("GAME OVER");
+                            break;
+                        }
+                        buffer = new Cell(changes.tail.x, changes.tail.y, CellState.empty);
+                        refresh();
+                        buffer = new Cell(changes.head.x, changes.head.y, CellState.snake);
+                        refresh();
+                    }
+                    if (status) break;
+                    refresh();
+                }
+            }
+        }.start();
     }
 
     void refresh(int game_id)
@@ -58,6 +96,7 @@ class ModelServer implements IModelServer {
 
     public void addPresenter(int p_id, IPresenter p) {
         list_players.add(p);
+
         if (free_games.isEmpty()) {
             games.add(new Game());
             buffer.add(new Cell());

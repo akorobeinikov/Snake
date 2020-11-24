@@ -7,12 +7,18 @@ public class Snake {
     private int size;
     private int direction;
 
-    private void checkOfDie() {
 
+    private boolean checkOfDie() {
+        Point head = body.get(size - 1);
+
+        if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+            return true;
+        }
+        return false;
     }
 
     public Snake(int x0, int y0) {
-        direction = 0;
+        direction = 1;
         size = 1;
         body.add(new Point(x0, y0));
     }
@@ -31,8 +37,9 @@ public class Snake {
         this.direction = direction;
     }
 
-    public void move() {
+    public SnakeChanges move() {
         Point head = body.get(size - 1);
+        Point tail = body.get(0);
         body.remove(0);
         switch(direction) {
             case 0:
@@ -48,6 +55,6 @@ public class Snake {
                 body.add(new Point(head.x - 1 , head.y));
                 break;
         }
-        checkOfDie();
+        return new SnakeChanges(checkOfDie(), tail, body.get(size - 1));
     }
 }

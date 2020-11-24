@@ -47,7 +47,7 @@ public class ViewPlayer extends JPanel implements IObserver {
         Cell point = m.getPoint();
         if (point == null)
             return;
-        System.out.printf("new point = %s", point.state);
+//        System.out.printf("new point = %s", point.state);
         viewField[point.x][point.y].setIcon(new ImageIcon(point.getIcon().getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT)));
     }
 
