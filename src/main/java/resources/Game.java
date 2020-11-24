@@ -40,7 +40,11 @@ public class Game {
             }
         }
         filled++;
-        return snakes[ok].translateSnakeToVectorOfCells();
+        ArrayList<Cell> snake = snakes[ok].translateSnakeToVectorOfCells();
+        for(int i = 0; i < snake.size(); i++) {
+            game_field[snake.get(i).x][snake.get(i).y].state = CellState.snake;
+        }
+        return snake;
     }
 
     public void setCell(Cell new_c) {
@@ -63,5 +67,17 @@ public class Game {
             }
         }
         return new Cell(-1, -1, null);
+    }
+
+    public ArrayList<Cell> getNotEmptyCells() {
+        ArrayList<Cell> res = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if(!game_field[i][j].isEmpty()) {
+                    res.add(game_field[i][j]);
+                }
+            }
+        }
+        return res;
     }
 }
