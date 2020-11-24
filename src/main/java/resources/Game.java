@@ -31,14 +31,26 @@ public class Game {
         if (snakes[ok] != null) {
             ok++;
         }
-        while (true) {
-            int snakePointx = 1 + new Random().nextInt(19);
-            int snakePointy = 1 + new Random().nextInt(19);
-            if (game_field[snakePointx][snakePointy].isEmpty()) {
-                snakes[ok] = new Snake(snakePointx, snakePointy);
-                break;
+
+        int snakePointy = new Random().nextInt(width);
+        Boolean findy = false;
+        while (!findy) {
+            findy = true;
+            for (int i = 0; i < height; i++) {
+                if (game_field[i][snakePointy].state != CellState.empty) {
+                    if (game_field[i][snakePointy].state == CellState.snake) {
+                        snakePointy = (snakePointy+3)%width;
+                    } else {
+                        snakePointy = (snakePointy+1)%width;
+                    }
+                    break;
+                }
             }
         }
+
+        int snakePointx = 3 + new Random().nextInt(height-6);
+        snakes[ok] = new Snake(snakePointx, snakePointy);
+
         filled++;
         ArrayList<Cell> snake = snakes[ok].translateSnakeToVectorOfCells();
         for(int i = 0; i < snake.size(); i++) {

@@ -19,8 +19,10 @@ public class Snake {
 
     public Snake(int x0, int y0) {
         direction = 1;
-        size = 1;
-        body.add(new Point(x0, y0));
+        size = 3;
+        for(int i = 0; i < size; i++) {
+            body.add(new Point(x0+i, y0));
+        }
     }
 
     public ArrayList<Cell> translateSnakeToVectorOfCells() {

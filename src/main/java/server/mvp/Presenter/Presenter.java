@@ -60,7 +60,7 @@ class Presenter implements IPresenter {
     @Override
     public void update() {
         v.setOp(1);
-        v.setCell(observed_model.getBuffer());
+        v.setCell(observed_model.getBuffer(id));
     }
 
     private static int getNewId() {
