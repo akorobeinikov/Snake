@@ -36,7 +36,7 @@ class ModelServer implements IModelServer {
     }
 
     public void addSnake(int p_id) {
-        ArrayList<Cell> snake = games.get(0).addSnake();
+        ArrayList<Cell> snake = games.get(getGameId(p_id)).addSnake();
         for (int i = 0; i < snake.size(); ++i) {
             buffer.set(getGameId(p_id), snake.get(i));
             refresh(getGameId(p_id));
@@ -67,13 +67,13 @@ class ModelServer implements IModelServer {
                             System.out.println("GAME OVER");
                             break;
                         }
-                        buffer = new Cell(changes.tail.x, changes.tail.y, CellState.empty);
-                        refresh();
-                        buffer = new Cell(changes.head.x, changes.head.y, CellState.snake);
-                        refresh();
+                        buffer.set(gameId, new Cell(changes.tail.x, changes.tail.y, CellState.empty));
+                        refresh(gameId);
+                        buffer.set(gameId, new Cell(changes.head.x, changes.head.y, CellState.snake));
+                        refresh(gameId);
                     }
                     if (status) break;
-                    refresh();
+                    refresh(gameId);
                 }
             }
         }.start();
@@ -122,6 +122,7 @@ class ModelServer implements IModelServer {
     public void removePresenter(int p_id, IPresenter p) {
         list_players.remove(p);
         presenter_game.set(p_id, -1);
+        // add game to free games?
         // need to remove snake of p_id and send update
     }
 
