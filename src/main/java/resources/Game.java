@@ -9,7 +9,7 @@ public class Game {
     int height = 20;
     int width = 20;
     int filled = 0;
-    Cell[][] game_field = new Cell[height][width]; // temporary public
+    public Cell[][] game_field = new Cell[height][width]; // temporary public
     public Snake[] snakes = new Snake[2];
 
     public Game() {
@@ -51,8 +51,8 @@ public class Game {
         int snakePointx = 3 + new Random().nextInt(height-6);
         snakes[ok] = new Snake(snakePointx, snakePointy);
 
-        filled++;
         ArrayList<Cell> snake = snakes[ok].translateSnakeToVectorOfCells();
+        filled+=snake.size();
         for(int i = 0; i < snake.size(); i++) {
             game_field[snake.get(i).x][snake.get(i).y].state = CellState.snake;
         }
@@ -91,5 +91,10 @@ public class Game {
             }
         }
         return res;
+    }
+
+    public void increaseSnake(int index) {
+        filled++;
+        snakes[index].increaseSnake();
     }
 }

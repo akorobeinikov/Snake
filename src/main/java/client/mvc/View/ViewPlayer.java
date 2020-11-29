@@ -6,6 +6,9 @@ import resources.Cell;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class ViewPlayer extends JPanel implements IObserver {
     ModelClient m;
@@ -19,6 +22,42 @@ public class ViewPlayer extends JPanel implements IObserver {
     }
 
     private void initComponents() {
+        this.setFocusable(true);
+        this.setFocusTraversalKeysEnabled(false);
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                char ch = event.getKeyChar();
+                System.out.println(ch);
+                if (ch == 'w') {
+                    System.out.println('w');
+                    m.setDirection(3);
+                }
+
+                if (ch == 'a') {
+                    System.out.println('a');
+                    m.setDirection(0);
+                }
+
+                if (ch == 's') {
+                    System.out.println('s');
+                    m.setDirection(1);
+                }
+
+                if (ch == 'd') {
+                    System.out.println('d');
+                    m.setDirection(2);
+                }
+            }
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
         int cell_height = 15;
         int cell_width = 15;
         int height = 20;
@@ -44,6 +83,7 @@ public class ViewPlayer extends JPanel implements IObserver {
 
     @Override
     public void refresh() {
+        this.requestFocus();
         Cell point = m.getPoint();
         if (point == null)
             return;
