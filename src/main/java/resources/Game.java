@@ -59,10 +59,6 @@ public class Game {
         return snake;
     }
 
-    public void setCell(Cell new_c) {
-        game_field[new_c.x][new_c.y] = new_c;
-    }
-
     public Cell generateNewItem() {
         int point = new Random().nextInt(height * width - filled);
         System.out.println(point);
@@ -93,8 +89,21 @@ public class Game {
         return res;
     }
 
-    public void increaseSnake(int index) {
+    public SnakeChanges moveSnakeHead(int index) {
         filled++;
-        snakes[index].increaseSnake();
+        Point head = snakes[index].moveHead();
+        boolean is_grow = (game_field[head.x][head.y].state == CellState.eat);
+        game_field[head.x][head.y].state = CellState.snake;
+        Point tail = snakes[index].getTail();
+        // what if next cell state is snake, but it's her own tail?
+        boolean moving_to_tail = (game_field[tail.x][tail.y] == game_field[head.x][head.y]);
+        return new SnakeChanges(snakes[index].checkOfDie(), head, is_grow, moving_to_tail);
+    }
+
+    public Point moveSnakeTail(int index) {
+        filled--;
+        Point tail = snakes[index].moveTail();
+        game_field[tail.x][tail.y].state = CellState.empty;
+        return tail;
     }
 }

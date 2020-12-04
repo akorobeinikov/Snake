@@ -23,14 +23,6 @@ class ModelServer implements IModelServer {
 
     public ModelServer() {}
 
-    public void setCell(int p_id, Cell new_c) {
-        int game_id = getGameId(p_id);
-        games.get(game_id).setCell(new_c);
-        buffer.set(game_id, new_c);
-        refresh(game_id);
-    }
-
-
     public void generateNewItem(int p_id) {
         int game_id = getGameId(p_id);
         buffer.set(game_id, games.get(game_id).generateNewItem()); // what if return is (-1, -1, -1)?
@@ -45,14 +37,13 @@ class ModelServer implements IModelServer {
         }
     }
 
-
     public void gameStart(int gameId) {
         new Thread(){
             @Override
             public void run() {
                 Game game = games.get(gameId);
                 boolean status = false;
-
+                boolean eaten = false;
                 while(true) {
                     try {
                         Thread.sleep(150);
@@ -63,8 +54,7 @@ class ModelServer implements IModelServer {
                         if (game.snakes[i] == null) {
                             continue;
                         }
-                        SnakeChanges changes = game.snakes[i].move();
-                        game.snakes[i].changeOldDirection();
+                        SnakeChanges changes = game.moveSnakeHead(i);
                         status = changes.status;
                         System.out.printf("Status = %b \n", status);
                         if (status) {
@@ -73,14 +63,22 @@ class ModelServer implements IModelServer {
                         }
                         buffer.set(gameId, new Cell(changes.head.x, changes.head.y, CellState.snake));
                         refresh(gameId);
-                        if(game.game_field[changes.head.x][changes.head.y].state == CellState.eat) {
-                            game.increaseSnake(i);
-                            generateNewItem(gameId);
-                        } else {
-                            game.snakes[i].removeTail();
-                            buffer.set(gameId, new Cell(changes.tail.x, changes.tail.y, CellState.empty));
+                        if(changes.moving_to_tail) {
+                            Point tail = game.moveSnakeTail(i);
+                            continue;
                         }
-                        refresh(gameId);
+                        if (changes.is_grow) {
+                            eaten = true;
+                            game.snakes[i].increaseSnake();
+                        } else {
+                            Point tail = game.moveSnakeTail(i);
+                            buffer.set(gameId, new Cell(tail.x, tail.y, CellState.empty));
+                            refresh(gameId);
+                        }
+                    }
+                    if(eaten == true) {
+                        eaten = false;
+                        generateNewItem(gameId);
                     }
                     if (status) break;
                     refresh(gameId);
