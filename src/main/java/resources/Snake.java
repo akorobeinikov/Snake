@@ -6,9 +6,9 @@ public class Snake {
     private ArrayList<Point> body = new ArrayList<Point>();
     private int size;
     private int direction;
+    private int old_direction;  // to check that new direction isn't opposite to the old one
 
-
-    private boolean checkOfDie() {
+    public boolean checkOfDie() {
         Point head = body.get(size - 1);
 
         if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
@@ -19,6 +19,7 @@ public class Snake {
 
     public Snake(int x0, int y0) {
         direction = 1;
+        old_direction = direction;
         size = 3;
         for(int i = 0; i < size; i++) {
             body.add(new Point(x0+i, y0));
@@ -36,27 +37,45 @@ public class Snake {
     }
 
     public void changeDirection(int direction) {
-        this.direction = direction;
+        if(Math.abs(direction-old_direction) != 2)
+            this.direction = direction;
     }
 
-    public SnakeChanges move() {
+    public void changeOldDirection() {
+        old_direction = direction;
+    }
+
+    public Point moveHead() {
+        changeOldDirection();
         Point head = body.get(size - 1);
-        Point tail = body.get(0);
-        body.remove(0);
         switch(direction) {
             case 0:
-                body.add(new Point(head.x, head.y - 1));
+                int y = (head.y == 0) ? 19 : head.y - 1;
+                body.add(new Point(head.x, y));
                 break;
             case 1:
-                body.add(new Point(head.x + 1, head.y));
+                body.add(new Point((head.x + 1) % 20, head.y));
                 break;
             case 2:
-                body.add(new Point(head.x , head.y + 1));
+                body.add(new Point(head.x, (head.y + 1) % 20));
                 break;
             case 3:
-                body.add(new Point(head.x - 1 , head.y));
+                int x = (head.x == 0) ? 19 : head.x - 1;
+                body.add(new Point(x, head.y));
                 break;
         }
-        return new SnakeChanges(checkOfDie(), tail, body.get(size - 1));
+        return body.get(size);
+    }
+
+    public Point getTail() {
+        return body.get(0);
+    }
+
+    public Point moveTail() {
+        return body.remove(0);
+    }
+
+    public void increaseSnake() {
+        size++;
     }
 }

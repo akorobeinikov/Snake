@@ -1,5 +1,6 @@
 package server.mvp.Model;
 
+import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,18 +17,11 @@ class ModelServer implements IModelServer {
     ArrayList<Game> games = new ArrayList<>();
     ArrayList<IPresenter> list_players = new ArrayList<>();
     ArrayList<Integer> presenter_game = new ArrayList<>();
+    ArrayList<Integer> presenter_snake = new ArrayList<>();
     ArrayDeque<Integer> free_games = new ArrayDeque<>();
     ArrayList<Cell> buffer = new ArrayList<>();
 
     public ModelServer() {}
-
-    public void setCell(int p_id, Cell new_c) {
-        int game_id = getGameId(p_id);
-        games.get(game_id).setCell(new_c);
-        buffer.set(game_id, new_c);
-        refresh(game_id);
-    }
-
 
     public void generateNewItem(int p_id) {
         int game_id = getGameId(p_id);
@@ -43,13 +37,13 @@ class ModelServer implements IModelServer {
         }
     }
 
-
     public void gameStart(int gameId) {
         new Thread(){
             @Override
             public void run() {
                 Game game = games.get(gameId);
                 boolean status = false;
+                boolean eaten = false;
                 while(true) {
                     try {
                         Thread.sleep(150);
@@ -60,17 +54,31 @@ class ModelServer implements IModelServer {
                         if (game.snakes[i] == null) {
                             continue;
                         }
-                        SnakeChanges changes = game.snakes[i].move();
+                        SnakeChanges changes = game.moveSnakeHead(i);
                         status = changes.status;
                         System.out.printf("Status = %b \n", status);
                         if (status) {
                             System.out.println("GAME OVER");
                             break;
                         }
-                        buffer.set(gameId, new Cell(changes.tail.x, changes.tail.y, CellState.empty));
-                        refresh(gameId);
                         buffer.set(gameId, new Cell(changes.head.x, changes.head.y, CellState.snake));
                         refresh(gameId);
+                        if(changes.moving_to_tail) {
+                            Point tail = game.moveSnakeTail(i);
+                            continue;
+                        }
+                        if (changes.is_grow) {
+                            eaten = true;
+                            game.snakes[i].increaseSnake();
+                        } else {
+                            Point tail = game.moveSnakeTail(i);
+                            buffer.set(gameId, new Cell(tail.x, tail.y, CellState.empty));
+                            refresh(gameId);
+                        }
+                    }
+                    if(eaten == true) {
+                        eaten = false;
+                        generateNewItem(gameId);
                     }
                     if (status) break;
                     refresh(gameId);
@@ -103,14 +111,20 @@ class ModelServer implements IModelServer {
             presenter_game.add(p_id, games.size()-1);
             generateNewItem(p_id);
             free_games.offerLast(games.size()-1);
+            presenter_snake.add(p_id, 0);
         } else {
             int gameId = free_games.pollFirst();
             presenter_game.add(p_id, gameId);
+            presenter_snake.add(p_id, 1);
             updateSecondPlayer(p_id);
             gameStart(gameId);
         }
         addSnake(p_id);
         refresh(getGameId(p_id));
+    }
+
+    public void updateSnakeDirection(int p_id, int direction) {
+        games.get(getGameId(p_id)).snakes[presenter_snake.get(p_id)].changeDirection(direction);
     }
 
     private void updateSecondPlayer(int p_id) {

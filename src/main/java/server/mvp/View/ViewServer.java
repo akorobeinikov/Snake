@@ -69,6 +69,15 @@ public class ViewServer implements IViewServer{
         return null;
     }
 
+    public Integer getDirection() {
+        try {
+            return dis.readInt();
+        } catch (IOException ex) {
+            Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public void setOp(int op) {
         try {
             dos.writeInt(op);

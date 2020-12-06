@@ -9,7 +9,7 @@ public class Game {
     int height = 20;
     int width = 20;
     int filled = 0;
-    Cell[][] game_field = new Cell[height][width]; // temporary public
+    public Cell[][] game_field = new Cell[height][width]; // temporary public
     public Snake[] snakes = new Snake[2];
 
     public Game() {
@@ -51,16 +51,12 @@ public class Game {
         int snakePointx = 3 + new Random().nextInt(height-6);
         snakes[ok] = new Snake(snakePointx, snakePointy);
 
-        filled++;
         ArrayList<Cell> snake = snakes[ok].translateSnakeToVectorOfCells();
+        filled+=snake.size();
         for(int i = 0; i < snake.size(); i++) {
             game_field[snake.get(i).x][snake.get(i).y].state = CellState.snake;
         }
         return snake;
-    }
-
-    public void setCell(Cell new_c) {
-        game_field[new_c.x][new_c.y] = new_c;
     }
 
     public Cell generateNewItem() {
@@ -91,5 +87,23 @@ public class Game {
             }
         }
         return res;
+    }
+
+    public SnakeChanges moveSnakeHead(int index) {
+        filled++;
+        Point head = snakes[index].moveHead();
+        boolean is_grow = (game_field[head.x][head.y].state == CellState.eat);
+        game_field[head.x][head.y].state = CellState.snake;
+        Point tail = snakes[index].getTail();
+        // what if next cell state is snake, but it's her own tail?
+        boolean moving_to_tail = (game_field[tail.x][tail.y] == game_field[head.x][head.y]);
+        return new SnakeChanges(snakes[index].checkOfDie(), head, is_grow, moving_to_tail);
+    }
+
+    public Point moveSnakeTail(int index) {
+        filled--;
+        Point tail = snakes[index].moveTail();
+        game_field[tail.x][tail.y].state = CellState.empty;
+        return tail;
     }
 }

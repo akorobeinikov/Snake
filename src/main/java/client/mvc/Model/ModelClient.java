@@ -44,6 +44,7 @@ public class ModelClient {
             Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     public void init()
     {
         if(cs != null) return;
@@ -120,5 +121,18 @@ public class ModelClient {
             Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    public void setDirection(Integer direction) {
+        if(cs == null) return;
+        try {
+            System.out.println("change direction: " + direction);
+            dos.writeInt(1); // op
+            dos.flush();
+            dos.writeInt(direction);
+            dos.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

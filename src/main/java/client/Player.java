@@ -3,9 +3,9 @@ package client;
 import client.mvc.Model.BModelClient;
 import client.mvc.Model.ModelClient;
 import client.mvc.View.ViewPlayer;
+
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class Player extends JFrame {
     ModelClient m;
@@ -14,10 +14,8 @@ public class Player extends JFrame {
     private JButton connectButton;
     private JPanel field_label;
 
-
     public Player() {
         m = BModelClient.model();
-
         setContentPane(contentPane);
         setVisible(true);
 
@@ -38,6 +36,7 @@ public class Player extends JFrame {
 
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 Player player = new Player();
                 player.setVisible(true);
