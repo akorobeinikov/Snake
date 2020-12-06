@@ -31,7 +31,7 @@ public class Snake {
         for (int i = 0; i < size; ++i) {
             int x = body.get(i).x;
             int y = body.get(i).y;
-            result.add(new Cell(x, y, CellState.snake));
+            result.add(new Cell(x, y, CellState.snake1));
         }
         return result;
     }

@@ -2,7 +2,9 @@ package client;
 
 import client.mvc.Model.BModelClient;
 import client.mvc.Model.ModelClient;
+import client.mvc.View.ViewInformationField;
 import client.mvc.View.ViewPlayer;
+import client.mvc.View.ViewResultField;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -13,6 +15,9 @@ public class Player extends JFrame {
     private ViewPlayer field;
     private JButton connectButton;
     private JPanel field_label;
+    private JPanel info;
+    private ViewResultField result;
+    private ViewInformationField info_players;
 
     public Player() {
         m = BModelClient.model();
@@ -32,6 +37,7 @@ public class Player extends JFrame {
                 m.init();
             }
         });
+
     }
 
     public static void main(String[] args) {
@@ -44,4 +50,5 @@ public class Player extends JFrame {
             }
         });
     }
+
 }

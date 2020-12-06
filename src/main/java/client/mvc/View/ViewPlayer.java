@@ -28,7 +28,7 @@ public class ViewPlayer extends JPanel implements IObserver {
             @Override
             public void keyPressed(KeyEvent event) {
                 char ch = event.getKeyChar();
-                System.out.println(ch);
+//                System.out.println(ch);
                 if (ch == 'w' || ch == 'W' || ch == 'ц' || ch == 'Ц') {
                     System.out.println('w');
                     m.setDirection(3);
@@ -85,7 +85,7 @@ public class ViewPlayer extends JPanel implements IObserver {
     public void refresh() {
         this.requestFocus();
         Cell point = m.getPoint();
-        if (point == null)
+        if (point == null || point.x < 0)
             return;
 //        System.out.printf("new point = %s", point.state);
         viewField[point.x][point.y].setIcon(new ImageIcon(point.getIcon().getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT)));

@@ -58,10 +58,12 @@ class ModelServer implements IModelServer {
                         status = changes.status;
                         System.out.printf("Status = %b \n", status);
                         if (status) {
+                            buffer.set(gameId, new Cell(-1, 1 - i, CellState.fromInteger(2 + i)));
+                            refresh(gameId);
                             System.out.println("GAME OVER");
                             break;
                         }
-                        buffer.set(gameId, new Cell(changes.head.x, changes.head.y, CellState.snake));
+                        buffer.set(gameId, new Cell(changes.head.x, changes.head.y, CellState.fromInteger(2 + i)));
                         refresh(gameId);
                         if(changes.moving_to_tail) {
                             Point tail = game.moveSnakeTail(i);
@@ -76,11 +78,11 @@ class ModelServer implements IModelServer {
                             refresh(gameId);
                         }
                     }
+                    if (status) break;
                     if(eaten == true) {
                         eaten = false;
                         generateNewItem(gameId);
                     }
-                    if (status) break;
                     refresh(gameId);
                 }
             }
@@ -89,42 +91,67 @@ class ModelServer implements IModelServer {
 
     void refresh(int game_id)
     {
-        for (int i = 0; i < list_players.size(); i++) {
+        for (int i = 0; i < presenter_game.size(); i++) {
             if(getGameId(i) == game_id) {// add additional ArrayList game_id->p_ids?
                 list_players.get(i).update();
             }
         }
     }
 
+    void refresh(int game_id, int p_id)
+    {
+        list_players.get(p_id).update();
+    }
+
     public Cell getBuffer(int p_id) {
         int game_id = getGameId(p_id);
-        System.out.printf("buffer p_id = %d, game = %d, x = %d, y = %d, state = %s\n", p_id, game_id, buffer.get(game_id).x, buffer.get(game_id).y, buffer.get(game_id).state);
+//        System.out.printf("buffer p_id = %d, game = %d, x = %d, y = %d, state = %s\n", p_id, game_id, buffer.get(game_id).x, buffer.get(game_id).y, buffer.get(game_id).state);
         return buffer.get(game_id);
     }
 
     public void addPresenter(int p_id, IPresenter p) {
-        list_players.add(p);
+        list_players.add(p_id, p);
 
         if (free_games.isEmpty()) {
             games.add(new Game());
             buffer.add(new Cell());
             presenter_game.add(p_id, games.size()-1);
             generateNewItem(p_id);
+            infoForFirstPlayer(p_id);
             free_games.offerLast(games.size()-1);
             presenter_snake.add(p_id, 0);
+            addSnake(p_id);
+            refresh(getGameId(p_id));
         } else {
             int gameId = free_games.pollFirst();
             presenter_game.add(p_id, gameId);
             presenter_snake.add(p_id, 1);
             updateSecondPlayer(p_id);
-            gameStart(gameId);
+            infoForSecondPlayer(p_id);
+            addSnake(p_id);
+            refresh(getGameId(p_id));
+            gamePrepare(getGameId(p_id));
         }
-        addSnake(p_id);
-        refresh(getGameId(p_id));
     }
 
     public void updateSnakeDirection(int p_id, int direction) {
         games.get(getGameId(p_id)).snakes[presenter_snake.get(p_id)].changeDirection(direction);
+    }
+
+    public void gamePrepare(int game_id) {
+        infoAboutStartGame(game_id);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        gameStart(game_id);
+    }
+
+    public void update(int p_id, int direction) {
+        if (direction >= 0) {
+            updateSnakeDirection(p_id, direction);
+        }
     }
 
     private void updateSecondPlayer(int p_id) {
@@ -135,6 +162,21 @@ class ModelServer implements IModelServer {
         }
     }
 
+    private void infoForFirstPlayer(int p_id) {
+        buffer.set(getGameId(p_id), new Cell(-2, 1, CellState.empty));
+        refresh(getGameId(p_id), p_id);
+    }
+
+    private void infoForSecondPlayer(int p_id) {
+        buffer.set(getGameId(p_id), new Cell(-2, 2, CellState.empty));
+        refresh(getGameId(p_id), p_id);
+    }
+
+    private void infoAboutStartGame(int game_id) {
+        buffer.set(game_id, new Cell(-2, 3, CellState.empty));
+        refresh(game_id);
+    }
+
     public void removePresenter(int p_id, IPresenter p) {
         list_players.remove(p);
         presenter_game.set(p_id, -1);
@@ -143,6 +185,9 @@ class ModelServer implements IModelServer {
     }
 
     private int getGameId(int p_id) {
-        return presenter_game.get(p_id);
+        if (p_id < presenter_game.size())
+            return presenter_game.get(p_id);
+        else
+            return -1;
     }
 }

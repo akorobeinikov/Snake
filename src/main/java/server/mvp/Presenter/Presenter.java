@@ -39,7 +39,7 @@ class Presenter implements IPresenter {
                     code = v.getOp();
                     if(code == 1)
                     {
-                        observed_model.updateSnakeDirection(id, v.getDirection());
+                        observed_model.update(id, v.getDirection());
                     }
                     if(code == 2)
                     {

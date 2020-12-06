@@ -11,8 +11,10 @@ public class Game {
     int filled = 0;
     public Cell[][] game_field = new Cell[height][width]; // temporary public
     public Snake[] snakes = new Snake[2];
+    public int ready;
 
     public Game() {
+        ready = -1;
         // field initialization
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
@@ -38,7 +40,7 @@ public class Game {
             findy = true;
             for (int i = 0; i < height; i++) {
                 if (game_field[i][snakePointy].state != CellState.empty) {
-                    if (game_field[i][snakePointy].state == CellState.snake) {
+                    if (game_field[i][snakePointy].state == CellState.fromInteger(2 + ok)) {
                         snakePointy = (snakePointy+3)%width;
                     } else {
                         snakePointy = (snakePointy+1)%width;
@@ -54,7 +56,8 @@ public class Game {
         ArrayList<Cell> snake = snakes[ok].translateSnakeToVectorOfCells();
         filled+=snake.size();
         for(int i = 0; i < snake.size(); i++) {
-            game_field[snake.get(i).x][snake.get(i).y].state = CellState.snake;
+            snake.get(i).state = CellState.fromInteger(2 + ok);
+            game_field[snake.get(i).x][snake.get(i).y].state = CellState.fromInteger(2 + ok);
         }
         return snake;
     }
@@ -93,11 +96,12 @@ public class Game {
         filled++;
         Point head = snakes[index].moveHead();
         boolean is_grow = (game_field[head.x][head.y].state == CellState.eat);
-        game_field[head.x][head.y].state = CellState.snake;
+        boolean is_crash = (game_field[head.x][head.y].state.ordinal() > 1);
+        game_field[head.x][head.y].state = CellState.fromInteger(2 + index);
         Point tail = snakes[index].getTail();
         // what if next cell state is snake, but it's her own tail?
         boolean moving_to_tail = (game_field[tail.x][tail.y] == game_field[head.x][head.y]);
-        return new SnakeChanges(snakes[index].checkOfDie(), head, is_grow, moving_to_tail);
+        return new SnakeChanges(head, is_grow, moving_to_tail, is_crash);
     }
 
     public Point moveSnakeTail(int index) {
