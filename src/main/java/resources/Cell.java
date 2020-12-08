@@ -11,10 +11,11 @@ public class Cell {
     @JsonIgnore
     static ImageIcon[] icons;  // some kind of Array
     static {
-        icons = new ImageIcon[3];
+        icons = new ImageIcon[4];
         icons[0] = new ImageIcon(new ImageIcon("green.png").getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT));
         icons[1] = new ImageIcon(new ImageIcon("apple.png").getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT));
-        icons[2] = new ImageIcon(new ImageIcon("snake_body.png").getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT));
+        icons[2] = new ImageIcon(new ImageIcon("snake_body_1.png").getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT));
+        icons[3] = new ImageIcon(new ImageIcon("snake_body_2.png").getImage().getScaledInstance(-1, -1, Image.SCALE_DEFAULT));
     }
     public int x, y;
     public CellState state;

@@ -11,8 +11,11 @@ public class Game {
     int filled = 0;
     public Cell[][] game_field = new Cell[height][width]; // temporary public
     public Snake[] snakes = new Snake[2];
+    public ArrayList<Integer> players = new ArrayList<>();
+    public boolean status;
 
     public Game() {
+        status = true;
         // field initialization
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
@@ -24,6 +27,14 @@ public class Game {
         for (int i = 0; i < 2; ++i) {
             snakes[i] = null;
         }
+    }
+
+    public void addPlayer(int p_id) {
+        players.add(p_id);
+    }
+
+    public int getSnakeIndex(int p_id) {
+        return players.indexOf(p_id);
     }
 
     public ArrayList<Cell> addSnake() {
@@ -38,7 +49,7 @@ public class Game {
             findy = true;
             for (int i = 0; i < height; i++) {
                 if (game_field[i][snakePointy].state != CellState.empty) {
-                    if (game_field[i][snakePointy].state == CellState.snake) {
+                    if (game_field[i][snakePointy].state == CellState.fromInteger(2 + ok)) {
                         snakePointy = (snakePointy+3)%width;
                     } else {
                         snakePointy = (snakePointy+1)%width;
@@ -54,14 +65,14 @@ public class Game {
         ArrayList<Cell> snake = snakes[ok].translateSnakeToVectorOfCells();
         filled+=snake.size();
         for(int i = 0; i < snake.size(); i++) {
-            game_field[snake.get(i).x][snake.get(i).y].state = CellState.snake;
+            snake.get(i).state = CellState.fromInteger(2 + ok);
+            game_field[snake.get(i).x][snake.get(i).y].state = CellState.fromInteger(2 + ok);
         }
         return snake;
     }
 
     public Cell generateNewItem() {
         int point = new Random().nextInt(height * width - filled);
-        System.out.println(point);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (game_field[i][j].isEmpty()) {
@@ -93,11 +104,14 @@ public class Game {
         filled++;
         Point head = snakes[index].moveHead();
         boolean is_grow = (game_field[head.x][head.y].state == CellState.eat);
-        game_field[head.x][head.y].state = CellState.snake;
+        boolean is_crash = (game_field[head.x][head.y].state.ordinal() > 1);
+        game_field[head.x][head.y].state = CellState.fromInteger(2 + index);
         Point tail = snakes[index].getTail();
         // what if next cell state is snake, but it's her own tail?
         boolean moving_to_tail = (game_field[tail.x][tail.y] == game_field[head.x][head.y]);
-        return new SnakeChanges(snakes[index].checkOfDie(), head, is_grow, moving_to_tail);
+        SnakeChanges changes = new SnakeChanges(head, is_grow, moving_to_tail, is_crash);
+        status = changes.status;
+        return changes;
     }
 
     public Point moveSnakeTail(int index) {

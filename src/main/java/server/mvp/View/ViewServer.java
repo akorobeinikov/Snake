@@ -39,34 +39,17 @@ public class ViewServer implements IViewServer{
 
     public void setCell(final Cell point) {
         try {
-            System.out.printf("Send: x=%d, y=%d, state = %s \n", point.x, point.y, point.state);
             StringWriter writer = new StringWriter();
             ObjectMapper mapper = new ObjectMapper();
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             mapper.writeValue(writer, point);
-            System.out.println("On server :" + writer.toString() + '\n');
+
             dos.writeUTF(writer.toString());
             dos.flush();
         } catch (IOException ex) {
             Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-
-    public Cell getCell() {
-        try {
-            String jsonString = dis.readUTF();
-            StringReader reader = new StringReader(jsonString);
-
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-            Cell cell = mapper.readValue(reader, Cell.class);
-            return cell;
-        } catch (IOException ex) {
-            Logger.getLogger(ViewServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 
     public Integer getDirection() {
