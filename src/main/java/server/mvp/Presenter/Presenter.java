@@ -48,7 +48,7 @@ class Presenter implements IPresenter {
                     }
                     if(code == -1)
                     {
-                        observed_model.removePresenter(id, p);
+                        observed_model.removePresenter(id);
                         free_ids.offerLast(id);
                     }
                 }
@@ -64,8 +64,8 @@ class Presenter implements IPresenter {
     }
 
     private static int getNewId() {
-        global_id++;
         if (free_ids.isEmpty()) {
+            global_id++;
             return global_id-1;
         } else {
             return free_ids.pollFirst();

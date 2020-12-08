@@ -68,11 +68,11 @@ public class ModelClient {
                         while(true)
                         {
                             int op = dis.readInt();
-//                            System.out.println(op);
+
                             if(op == 1)
                             {
                                 String jsonString = dis.readUTF();
-//                                System.out.println(jsonString);
+
                                 StringReader reader = new StringReader(jsonString);
 
                                 ObjectMapper mapper = new ObjectMapper();
@@ -107,26 +107,9 @@ public class ModelClient {
         return point;
     }
 
-    public void setCell(Cell point)
-    {
-        if(cs == null) return;
-        try {
-            StringWriter writer = new StringWriter();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            mapper.writeValue(writer, point);
-            dos.writeUTF(writer.toString());
-            dos.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(ModelClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
     public void setDirection(Integer direction) {
         if(cs == null) return;
         try {
-//            System.out.println("change direction: " + direction);
             dos.writeInt(1); // op
             dos.flush();
             dos.writeInt(direction);

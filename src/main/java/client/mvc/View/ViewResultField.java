@@ -26,8 +26,12 @@ public class ViewResultField extends JLabel implements IObserver {
     @Override
     public void refresh() {
         Cell point = m.getPoint();
-        if (point == null || point.x != -1)
+        if (point == null || !(point.x == -1 || point.x == 100))
             return;
+        if (point.x == 100) {
+            setText("Result of game: ");
+            return;
+        }
         Integer winner = point.y + 1;
         setText("Result of game: " + winner.toString() + " player win");
     }

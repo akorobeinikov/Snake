@@ -37,7 +37,6 @@ public class Player extends JFrame {
                 m.init();
             }
         });
-
     }
 
     public static void main(String[] args) {

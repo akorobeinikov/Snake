@@ -26,8 +26,12 @@ public class ViewInformationField extends JLabel implements IObserver {
     @Override
     public void refresh() {
         Cell point = m.getPoint();
-        if (point == null || point.x != -2)
+        if (point == null || !(point.x == -2 || point.x == 100))
             return;
+        if (point.x == 100) {
+            setText("<html>Information about players: <br> You are 1 player <br> Second player left <br> Waiting a new opponent <br>");
+            return;
+        }
         Integer player = point.y;
         if (player == 1) {
             setText(getText() + "You are 1 player <br>" + "Waiting for second player to connect <br>");
