@@ -29,21 +29,21 @@ public class ViewPlayer extends JPanel implements IObserver {
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
-                char ch = event.getKeyChar();
+                int code = event.getKeyCode();
 
-                if (ch == 'w' || ch == 'W' || ch == 'ц' || ch == 'Ц') {
+                if (code == KeyEvent.VK_W) {
                     m.setDirection(3);
                 }
 
-                if (ch == 'a' || ch == 'A' || ch == 'ф' || ch == 'Ф') {
+                if (code == KeyEvent.VK_A) {
                     m.setDirection(0);
                 }
 
-                if (ch == 's' || ch == 'S' || ch == 'ы' || ch == 'Ы') {
+                if (code == KeyEvent.VK_S) {
                     m.setDirection(1);
                 }
 
-                if (ch == 'd' || ch == 'D' || ch == 'в' || ch == 'В') {
+                if (code == KeyEvent.VK_D) {
                     m.setDirection(2);
                 }
             }
